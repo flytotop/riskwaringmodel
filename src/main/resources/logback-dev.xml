@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="APP_NAME" value="@projectName@"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder
+            by default -->
+        <encoder>
+            <pattern>%d [%thread] %-5level [%X{traceId},%X{spanId},%X{parentSpanId}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Daily Rolling File Appender that compresses old files -->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${APP_NAME}/${APP_NAME}.log</file>
+
+
+        <rollingPolicy name="file" class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/${APP_NAME}/his/${APP_NAME}%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d [%thread] %-5level [%X{traceId},%X{spanId},%X{parentSpanId}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="file2" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logback.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.app" level="DEBUG" />
+    <!--    <logger name="com.apple" level="DEBUG"></logger>-->
+    <!-- 1. 输出SQL 到控制台和文件-->
+    <logger name="org.hibernate.SQL" additivity="false" >
+        <level value="DEBUG" />
+        <appender-ref ref="file" />
+        <appender-ref ref="file2" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <!-- 2. 输出SQL 的参数到控制台和文件-->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" additivity="false" level="TRACE" >
+        <level value="TRACE" />
+        <appender-ref ref="file" />
+        <appender-ref ref="file2" />
+        <appender-ref ref="console" />
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="file" />
+        <appender-ref ref="file2" />
+    </root>
+    <!--    <root level="DEBUG">-->
+    <!--        <appender-ref ref="console" />-->
+    <!--        <appender-ref ref="file" />-->
+    <!--    </root>-->
+</configuration>
