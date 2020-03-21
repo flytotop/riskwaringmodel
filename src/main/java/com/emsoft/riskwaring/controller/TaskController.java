@@ -15,6 +15,9 @@ import com.emsoft.riskwaring.util.result.ResultCode;
 import com.emsoft.riskwaring.vo.RespVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,23 +44,32 @@ public class TaskController {
     public RespVo<List<ModelVo> > mxlb() {
         List<ModelDto> modelDtoList=taskService.modelList();
         List<ModelVo>  modelVos=new ArrayList<>();
-        Map map=new HashMap();
-        Map map1=new HashMap();
-        map1.put("name","开始日期");
-        map1.put("type","date");
-        map1.put("required","true");
-        map.put("qsrq",map1);
-        map1.clear();
-        map1.put("name","结束日期");
-        map1.put("type","date");
-        map1.put("required","true");
-        map.put("jsrq",map1);
         modelDtoList.stream().forEach(modelDto -> {
             ModelVo modelVo=new ModelVo();
             modelVo.setMxbh(modelDto.getModelCode());
             modelVo.setMxmc(modelDto.getModelName());
-            modelVo.setRwcs(map);
-            modelVo.setJgzd(modelDto.getResultDict());
+            List<TaksParmVo> taksParmVos =new ArrayList<>();
+            taksParmVos =(List<TaksParmVo>)JSONArray.toCollection(JSONArray.fromObject(modelDto.getTaskParm()),TaksParmVo.class);
+            Map parmMap=new HashMap();
+            taksParmVos.forEach(taksParmVo -> {
+                Map map1=new HashMap();
+                map1.put("name",taksParmVo.getName());
+                map1.put("type",taksParmVo.getType());
+                map1.put("required",taksParmVo.isRequired());
+                parmMap.put(taksParmVo.getParm(),map1);
+            });
+            List<ModelDictVo> resultDicts=new ArrayList<>();
+            resultDicts =(List<ModelDictVo>)JSONArray.toCollection(JSONArray.fromObject(modelDto.getResultDict()),ModelDictVo.class);
+            Map dictMap=new HashMap();
+            resultDicts.forEach(modelDictVo -> {
+                Map map1=new HashMap();
+                map1.put("name",modelDictVo.getChineseExplain());
+                map1.put("type",modelDictVo.getType());
+                map1.put("required",modelDictVo.isRequired());
+                dictMap.put(modelDictVo.getParameterName(),map1);
+            });
+            modelVo.setJgzd(dictMap);
+            modelVo.setRwcs(parmMap);
             modelVos.add(modelVo);
         });
         return RespVo.ok(modelVos);
@@ -66,26 +78,35 @@ public class TaskController {
     @ApiOperation(value = "任务模型详情", tags = {"任务"})
     @RequestMapping(value = "/dsjfkpt/yjmx/{mxmc}", method = RequestMethod.GET,produces = "application/json")
     public RespVo<ModelVo> rwmxxq(@PathVariable("mxmc") String mxmc) {
-        //TODO 调试使用
-        Map map=new HashMap();
-        Map map1=new HashMap();
-        map1.put("name","开始日期");
-        map1.put("type","date");
-        map1.put("required","true");
-        map.put("qsrq",map1);
-        map1.clear();
-        map1.put("name","结束日期");
-        map1.put("type","date");
-        map1.put("required","true");
-        map.put("jsrq",map1);
+
 
         ModelDto modelDto=taskService.taskDetail(mxmc);
-        ModelVo vo=new ModelVo();
-        vo.setRwcs(map);
-        vo.setMxmc(modelDto.getModelName());
-        vo.setMxbh(modelDto.getModelCode());
-        vo.setJgzd(modelDto.getResultDict());
-        return RespVo.ok(vo);
+        ModelVo modelVo=new ModelVo();
+        modelVo.setMxbh(modelDto.getModelCode());
+        modelVo.setMxmc(modelDto.getModelName());
+        List<TaksParmVo> taksParmVos =new ArrayList<>();
+        taksParmVos =(List<TaksParmVo>)JSONArray.toCollection(JSONArray.fromObject(modelDto.getTaskParm()),TaksParmVo.class);
+        Map parmMap=new HashMap();
+        taksParmVos.forEach(taksParmVo -> {
+            Map map1=new HashMap();
+            map1.put("name",taksParmVo.getName());
+            map1.put("type",taksParmVo.getType());
+            map1.put("required",taksParmVo.isRequired());
+            parmMap.put(taksParmVo.getParm(),map1);
+        });
+        List<ModelDictVo> resultDicts=new ArrayList<>();
+        resultDicts =(List<ModelDictVo>)JSONArray.toCollection(JSONArray.fromObject(modelDto.getResultDict()),ModelDictVo.class);
+        Map dictMap=new HashMap();
+        resultDicts.forEach(modelDictVo -> {
+            Map map1=new HashMap();
+            map1.put("name",modelDictVo.getChineseExplain());
+            map1.put("type",modelDictVo.getType());
+            map1.put("required",modelDictVo.isRequired());
+            dictMap.put(modelDictVo.getParameterName(),map1);
+        });
+        modelVo.setJgzd(dictMap);
+        modelVo.setRwcs(parmMap);
+        return RespVo.ok(modelVo);
     }
 
     @ApiOperation(value = "任务结果", tags = {"任务"})
@@ -152,8 +173,12 @@ public class TaskController {
     @ApiOperation(value = "添加模型", tags = {"任务"})
     @RequestMapping(value = "/dsjfkpt/yjmx/tjmx", method = RequestMethod.POST,produces = "application/json" )
     public RespVo<Void> tjmx(@RequestBody ReqAddModelVo vo) {
-        ModelDto dto= CopyBean.simpleCopy(vo,ModelDto.class);
-        modelService.addModel(dto);
+        ModelDto modelDto=new ModelDto();
+        modelDto.setModelCode(vo.getMxbh());
+        modelDto.setModelName(vo.getMxmc());
+        modelDto.setTaskParm(vo.getRwcs());
+        modelDto.setResultDict(vo.getJgzd());
+        modelService.addModel(modelDto);
         return RespVo.status(ResultCode.OK).build();
     }
     @ApiOperation(value = "添加模型字典", tags = {"任务"})

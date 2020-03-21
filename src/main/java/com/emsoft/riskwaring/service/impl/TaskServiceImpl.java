@@ -44,11 +44,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<ModelDto> modelList() {
         List<ModelDto> modelDtos=modelRepo.modelquery();
-        List<ModelDto> results=new ArrayList<>();
-        modelDtos.forEach(modelDto -> {
-            results.add(taskDetail(modelDto.getModelName()));
-        });
-        return results;
+//        List<ModelDto> results=new ArrayList<>();
+//        modelDtos.forEach(modelDto -> {
+//            results.add(taskDetail(modelDto.getModelName()));
+//        });
+        return modelDtos;
     }
 
     /**
@@ -59,19 +59,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ModelDto taskDetail(String modelname) {
         ModelDto modelDto= modelRepo.modelQueryByModelname(modelname);
-        String modelCode=modelDto.getModelCode();
-        List<ModelDictDto> modelDictDtos=modelDictRepo.query(modelCode);
-        Map map=new HashMap();
-        Map map1=new HashMap();
-        modelDictDtos.stream().forEach(modelDicDto->{
-            map1.put("name",modelDicDto.getChineseExplain());
-            map1.put("type",modelDicDto.getType());
-            map1.put("required",modelDicDto.isRequired());
-            map.put(modelDicDto.getParameterName(),map1);
-        });
-        JSONObject bbb= JSONObject.fromObject(map);
-        System.out.println(bbb.toString());
-        modelDto.setResultDict(bbb);
+
         return modelDto;
 
     }

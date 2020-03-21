@@ -15,7 +15,7 @@ public class ModelDto {
     private String modelCode;
 
     //任务参数
-    private String taskParm;
+    private Object taskParm;
 
     //任务名称
     private String modelName;

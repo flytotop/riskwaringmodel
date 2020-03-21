@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Entity
 @Accessors(chain = true)
-@Table(name = "MODEL")
+@Table(name = "MODEL_MSG")
 //@UuidGenerator(name = "idGenerator")
 @EntityListeners(AuditingEntityListener.class)
 @Data
@@ -31,17 +31,17 @@ public class ModelPo implements Serializable {
     private String id;
 
     //模型编码
-    @Column(name = "MODELCODE", nullable = true ,length = 36)
+    @Column(name = "MODEL_CODE", nullable = true ,length = 36)
     private String modelCode;
 
-    @Column(name = "MODELNAME", nullable = true ,length = 36)
+    @Column(name = "MODEL_NAME", nullable = true ,length = 36)
     private String modelName;
 
     //任务参数
-    @Column(name = "TASKPARM", nullable = true ,length = 36)
+    @Column(name = "TASK_PARM", nullable = true ,length = 255)
     private String taskParm;
 
     //结果字典
-    @Column(name = "RESULTDICT", nullable = true ,length = 72)
+    @Column(name = "RESULT_DICT", nullable = true ,length = 255)
     private String resultDict;
 }

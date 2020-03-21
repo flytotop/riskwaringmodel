@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Auther: xhf
  * @Date: 2020-03-17 10:19
@@ -16,17 +18,17 @@ public class ReqAddModelVo {
 
     //模型编码
     @ApiModelProperty(value = "模型编码" ,required = true)
-    private String modelCode;
+    private String mxbh;
 
     @ApiModelProperty(value = "模型名称" ,required = true)
-    private String modelName;
+    private String mxmc;
 
     //任务参数
-    @ApiModelProperty(value = "任务参数" ,required = true)
-    private String taskParm;
+    @ApiModelProperty(value = "任务参数" ,required = false)
+    private List<TaksParmVo> rwcs;
 
     //结果字典
-    @ApiModelProperty(value = "结果字典" ,required = true)
-    private String resultDict;
+    @ApiModelProperty(value = "结果字典" ,required = false)
+    private List<ModelDictVo> jgzd;
 
 }
